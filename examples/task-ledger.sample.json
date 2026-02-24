@@ -1,0 +1,114 @@
+{
+  "version": "1.0",
+  "tasks": [
+    {
+      "id": "custody_timeline_cleanup_001",
+      "title": "Cleanup timeline category and description quality",
+      "tags": ["custody", "timeline", "qa"],
+      "status": "DONE",
+      "acceptance": [
+        "Rows reviewed for category/description fit",
+        "Chronology preserved",
+        "Misclassified legal-order rows corrected"
+      ],
+      "notes": "Focused on evidence-grounded categorization and concise legal-assistant style descriptions.",
+      "ratings": {
+        "performance": 5,
+        "result": 4,
+        "note": "Execution was fast and disciplined; one edge-case row still needed manual correction.",
+        "worked": [
+          "Evidence-first review process",
+          "Clear in-thread progress messages",
+          "Strict duplicate detection before rewrites"
+        ],
+        "change": [
+          "Improve order-document vs denial-event disambiguation"
+        ]
+      },
+      "artifacts": [
+        {
+          "kind": "report",
+          "path": "reports/CLEANUP-SUMMARY.md",
+          "meta": {
+            "channel": "telegram",
+            "messageId": "abc123"
+          }
+        }
+      ],
+      "createdAt": "2026-02-23T17:00:00Z",
+      "updatedAt": "2026-02-23T18:30:00Z"
+    },
+    {
+      "id": "openclaw_pr_triage_002",
+      "title": "Triage OpenClaw approval-flow regression PRs",
+      "tags": ["openclaw", "github", "triage"],
+      "status": "DONE",
+      "acceptance": [
+        "Issue status verified",
+        "PR status verified",
+        "Maintainer nudge posted where needed"
+      ],
+      "notes": "Validated upstream resolution and CI blockers.",
+      "ratings": {
+        "performance": 4,
+        "result": 5,
+        "note": "Outcome fully achieved; some repeated checks due to moving upstream state.",
+        "worked": [
+          "Use gh CLI with JSON for deterministic checks",
+          "Post concise maintainer pings with actionable asks"
+        ],
+        "change": [
+          "Automate PR watch notifications"
+        ]
+      },
+      "artifacts": [
+        {
+          "kind": "link",
+          "path": "https://github.com/openclaw/openclaw/issues/24904",
+          "meta": {"type": "issue"}
+        },
+        {
+          "kind": "link",
+          "path": "https://github.com/openclaw/openclaw/pull/24945",
+          "meta": {"type": "pr"}
+        }
+      ],
+      "createdAt": "2026-02-24T00:20:00Z",
+      "updatedAt": "2026-02-24T03:25:00Z"
+    },
+    {
+      "id": "voice_whisper_upgrade_003",
+      "title": "Add Whisper STT with browser fallback",
+      "tags": ["voice", "stt", "ux"],
+      "status": "DONE",
+      "acceptance": [
+        "Whisper transcription endpoint added",
+        "Frontend microphone path uploads audio",
+        "Browser STT fallback retained"
+      ],
+      "notes": "Improved transcription quality and kept graceful fallback path.",
+      "ratings": {
+        "performance": 5,
+        "result": 5,
+        "note": "Strong user impact and reliable implementation.",
+        "worked": [
+          "Progressive enhancement approach",
+          "Clear fallback behavior",
+          "Small iterative validation loops"
+        ],
+        "change": [
+          "Add per-mode indicator (Whisper vs browser)"
+        ]
+      },
+      "artifacts": [
+        {
+          "kind": "commit",
+          "path": "feat(voice): add Whisper transcription path with browser fallback",
+          "meta": {"repo": "custody-evidence-app"}
+        }
+      ],
+      "createdAt": "2026-02-23T18:40:00Z",
+      "updatedAt": "2026-02-23T18:48:00Z"
+    }
+  ]
+}
