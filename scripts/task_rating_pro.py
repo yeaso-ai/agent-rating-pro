@@ -211,10 +211,19 @@ def _extract_coaching(t: dict[str, Any]) -> tuple[list[str], list[str]]:
     r = t.get("ratings") or {}
     ww: list[str] = []
     wc: list[str] = []
+
+    # Support nested rating schema
     for which in ("performance", "result"):
         rr = r.get(which) or {}
-        ww += _listify(rr.get("whatWorked"))
-        wc += _listify(rr.get("whatToChange"))
+        if isinstance(rr, dict):
+            ww += _listify(rr.get("whatWorked"))
+            wc += _listify(rr.get("whatToChange"))
+
+    # Support flat sample schema
+    if isinstance(r, dict):
+        ww += _listify(r.get("worked"))
+        wc += _listify(r.get("change"))
+
     # de-dup preserve order
     def dedup(items: list[str]) -> list[str]:
         seen = set()
@@ -226,6 +235,7 @@ def _extract_coaching(t: dict[str, Any]) -> tuple[list[str], list[str]]:
             seen.add(it2)
             out.append(it2)
         return out
+
     return dedup(ww), dedup(wc)
 
 
@@ -358,6 +368,60 @@ def cmd_lessons(args: argparse.Namespace) -> None:
         print(f"- ({n}) {it}")
 
 
+
+def cmd_report(args):
+    data = ensure_ledger(Path(args.ledger))
+    tasks = data.get("tasks", [])
+    if args.tag:
+        tasks = [t for t in tasks if args.tag in (t.get("tags") or [])]
+
+    out: list[str] = []
+    out.append("# Agent Rating Report")
+    out.append("")
+    out.append(f"Total tasks: {len(tasks)}")
+    out.append("")
+
+    for t in tasks:
+        rid = t.get("id", "unknown")
+        title = t.get("title", "(untitled)")
+        status = t.get("status", "UNKNOWN")
+        rr = t.get("ratings") or {}
+        if isinstance(rr.get("performance"), int):
+            perf = rr.get("performance")
+        else:
+            perf = _stars(t, "performance")
+        if isinstance(rr.get("result"), int):
+            res = rr.get("result")
+        else:
+            res = _stars(t, "result")
+        out.append(f"## {rid} — {title}")
+        out.append(f"- Status: {status}")
+        out.append(f"- Performance: {perf if perf is not None else '-'}")
+        out.append(f"- Result: {res if res is not None else '-'}")
+        fb = t.get("feedback")
+        if fb:
+            out.append(f"- Note: {fb}")
+        ww, wc = _extract_coaching(t)
+        if ww:
+            out.append("- Worked:")
+            for w in ww[:10]:
+                out.append(f"  - {w}")
+        if wc:
+            out.append("- Change:")
+            for c in wc[:10]:
+                out.append(f"  - {c}")
+        out.append("")
+
+    text = "\n".join(out).strip() + "\n"
+    if args.output:
+        out_path = Path(args.output)
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        out_path.write_text(text, encoding="utf-8")
+        print(f"report written: {out_path}")
+    else:
+        print(text)
+
+
 def build_parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(prog="task_rating_pro")
 
@@ -424,6 +488,13 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--tag", action="append")
     p.add_argument("--limit", type=int, default=10)
     p.set_defaults(func=cmd_lessons)
+
+    p = sub.add_parser("report")
+    add_global(p)
+    p.add_argument("--tag")
+    p.add_argument("--format", choices=["md"], default="md")
+    p.add_argument("--output")
+    p.set_defaults(func=cmd_report)
 
     return ap
 

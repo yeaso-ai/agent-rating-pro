@@ -94,6 +94,12 @@ Aggregate lessons:
 python3 scripts/task_rating_pro.py lessons --tag custody --limit 10
 ```
 
+Generate markdown report:
+
+```bash
+python3 scripts/task_rating_pro.py report --tag custody --format md --output reports/custody-rating-report.md
+```
+
 ---
 
 ## Example Ledger
